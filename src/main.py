@@ -1,5 +1,5 @@
 import pygame
-import sys
+#import sys
 import random
 
 from src.game.game import attack, heal
@@ -14,7 +14,7 @@ CELL_SIZE = 40
 
 #Função que define o time que começa
 def jogada_inicial():
-    """Roda um random de 50% para qual jogador começa a partida"""
+    """Roda um random de 50% para qual dorado começa a partida"""
     numero_primeira_jogada = random.randint(1,2)
     if numero_primeira_jogada == 1:
         a = "time_1"
@@ -61,6 +61,7 @@ team_2[3].position = (GRID_COLS - 5, 4)  # Hector
 team_2[4].position = (GRID_COLS - 6, 5)  # Clara
 
 
+
 # Inicializar Pygame
 pygame.init()
 screen = pygame.display.set_mode((GRID_COLS * CELL_SIZE, GRID_ROWS * CELL_SIZE))
@@ -103,57 +104,73 @@ def draw_characters():
         if character.health > 0:  # Só desenha personagens vivos
             draw_character_on_grid(character)
 
+def contador_de_turnos(selected_character, primeira_jogada):
+    """Verifica se o personagem pertence ao time correto para o turno atual."""
+    if selected_character.team == primeira_jogada:
+        return True
+    else:
+        print(f"Não é o turno do {selected_character.team}! É o turno do {primeira_jogada}.")
+        return False
+
+
 
 def main():
-    global selected_character, primeira_jogada
     running = True
-
+    global selected_character, primeira_jogada
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                # Obtém a célula que foi clicada
+                # Obtém a célula clicada
                 cell = get_cell_at_mouse(pygame.mouse.get_pos(), CELL_SIZE)
 
                 if selected_character:
-                    # Se o personagem está selecionado, tenta realizar a ação
-                    target = get_character_at_cell(cell, team_1 + team_2)
+                    # *** NOVO: Verifica se o turno é válido antes de realizar a ação ***
+                    if not contador_de_turnos(selected_character, primeira_jogada):
+                        selected_character = None
+                        continue
+
+                    target = get_character_at_cell(cell, team_1 + team_2)  # Obtém o alvo (se houver)
 
                     if target and target.team != selected_character.team:
-                        # Se o alvo for um inimigo, realiza o ataque ou cura
+                        # Realiza ataque ou cura
                         if isinstance(selected_character, Healer) and selected_character.range > 0:
-                            heal(selected_character, target)  # Cura se for Healer
+                            heal(selected_character, target)
                         else:
-                            # Chama a função 'attack', passando 'team_1' e 'team_2'
-                            attack(selected_character, target, team_1, team_2)  # Ataque normal
-                        selected_character = None  # Deselect após ação
+                            attack(selected_character, target, team_1, team_2)
+
+                        # *** NOVO: Troca o turno após o ataque ou cura ***
+                        if primeira_jogada == "team_1":
+                            primeira_jogada = "team_2"
+                        else:
+                            "team_1"
+                        selected_character = None  # Deseleciona o personagem após a jogada
                     elif not is_cell_occupied(cell, team_1, team_2):
-                        # Se a célula não estiver ocupada e dentro do alcance, move o personagem
+                        # Move o personagem se a célula estiver livre e no alcance
                         if move_character(selected_character, cell, team_1, team_2):
-                            selected_character = None  # Deselect após mover
+                            # *** NOVO: Troca o turno após o movimento ***
+                            if primeira_jogada == "team_1":
+                                primeira_jogada = "team_2"
+                            else:
+                                "team_1"
+                            selected_character = None  # Deseleciona o personagem após a jogada
                     else:
-                        # Se não for um inimigo, seleciona outro personagem
+                        # Permite selecionar outro personagem se a célula não for válida
                         selected_character = handle_click(pygame.mouse.get_pos(), team_1 + team_2)
                 else:
-                    # Se não há personagem selecionado, tenta selecionar um novo personagem
+                    # Seleciona um personagem se nenhum estiver selecionado
                     selected_character = handle_click(pygame.mouse.get_pos(), team_1 + team_2)
 
-        # Limpa a tela e desenha os componentes
+        # Atualiza a tela
         screen.fill((50, 50, 50))
         grid.draw(screen)
-
         if selected_character:
             draw_highlighted_area(screen, selected_character, CELL_SIZE, GRID_ROWS, GRID_COLS)
-
         draw_characters()
-        pygame.display.flip()  # Atualiza a tela
-        clock.tick(60)  # Limita a taxa de quadros
-
-    pygame.quit()
-    sys.exit()
-
+        pygame.display.flip()
+        clock.tick(60)
 
 
 if __name__ == "__main__":

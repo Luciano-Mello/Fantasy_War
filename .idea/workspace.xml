@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="bd172723-51c0-4961-9ed6-ce805a35638b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -21,7 +22,20 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "Luciano-Mello"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Luciano-Mello/Fantasy_War.git",
+    "accountId": "e5cc258d-622e-498f-9ad1-efaf34c320c7"
+  }
+}]]></component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -182,9 +196,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.game" />
-        <item itemvalue="Python.combat" />
         <item itemvalue="Python.grid" />
+        <item itemvalue="Python.combat" />
+        <item itemvalue="Python.game" />
         <item itemvalue="Python.characters" />
       </list>
     </recent_temporary>
