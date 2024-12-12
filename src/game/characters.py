@@ -57,6 +57,6 @@ class Healer(Character):
     def __init__(self, name, team):
         super().__init__(name, team, (255, 255, 255) if team == 'Team 1' else (255, 0, 0))
         self.health = 90
-        self.attack = 10
+        self.attack = 0
         self.movement = 4
-        self.range = 0
+        self.range = 4
