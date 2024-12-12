@@ -69,16 +69,16 @@ def attack(attacker, defender):
     else:
         print(f"{defender.name} já está derrotado!")
 
-def heal(healer, ally):
+def heal(healer, aliado):
     """Função para curar um aliado"""
-    if ally.health > 0:
+    if aliado.health > 0:
         heal_amount = 20  # Valor de cura
-        ally.health += heal_amount
-        if ally.health > 100:  # A vida não pode ultrapassar 100
-            ally.health = 100
-        print(f"{healer.name} curou {ally.name}. {ally.name} agora tem {ally.health} de vida.")
+        aliado.health += heal_amount
+        if aliado.health > 100:  # A vida não pode ultrapassar 100
+            aliado.health = 100
+        print(f"{healer.name} curou {aliado.name}. {aliado.name} agora tem {aliado.health} de vida.")
     else:
-        print(f"{ally.name} não pode ser curado porque já está derrotado!")
+        print(f"{aliado.name} não pode ser curado porque já está derrotado!")
 
 def get_character_at_cell(cell, all_characters):
     """Retorna o personagem que está na célula especificada (se houver)"""
@@ -109,13 +109,13 @@ def attack(attacker, defender, team_1, team_2):
 
 
 # Definindo a função de cura
-def heal(healer, ally):
+def heal(healer, aliado):
     """Função para curar um aliado"""
-    if ally.health > 0:
+    if aliado.health > 0:
         heal_amount = 20  # Valor de cura
-        ally.health += heal_amount
-        if ally.health > 100:  # A vida não pode ultrapassar 100
-            ally.health = 100
-        print(f"{healer.name} curou {ally.name}. {ally.name} agora tem {ally.health} de vida.")
+        aliado.health += heal_amount
+        if aliado.health > 100:  # A vida não pode ultrapassar 100
+            aliado.health = 100
+        print(f"{healer.name} curou {aliado.name}. {aliado.name} agora tem {aliado.health} de vida.")
     else:
-        print(f"{ally.name} não pode ser curado porque já está derrotado!")
+        print(f"{aliado.name} não pode ser curado porque já está derrotado!")

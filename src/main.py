@@ -5,27 +5,29 @@ import random
 from src.game.game import attack, heal
 from src.ui.grid import Grid
 from src.game.characters import Archer, Knight, Mage, Tank, Healer
-from src.game.game import handle_click, draw_highlighted_area, move_character, get_cell_at_mouse, is_cell_occupied, get_character_at_cell
+from src.game.game import handle_click, draw_highlighted_area, move_character, get_cell_at_mouse, is_cell_occupied, \
+    get_character_at_cell
 
 # Configurações da Grade
 GRID_ROWS = 15
 GRID_COLS = 12
 CELL_SIZE = 40
 
-#Função que define o time que começa
+
+# Função que define o time que começa
 def jogada_inicial():
     """Roda um random de 50% para qual jogador começa a partida"""
-    numero_primeira_jogada = random.randint(1,2)
+    numero_primeira_jogada = random.randint(1, 2)
     if numero_primeira_jogada == 1:
-        a = "time_1"
-        return a
+        return "Team 1"
     else:
-        b = "time_2"
-        return b
+        return "Team 2"
 
-primeira_jogada = jogada_inicial() # Define o time que começa
 
-#Verifica o turno de cada jogador
+# Define o time que começa
+primeira_jogada = jogada_inicial()
+
+# Verifica o turno de cada jogador
 grid = Grid(GRID_ROWS, GRID_COLS, CELL_SIZE)
 
 # Time 1 (branco)
@@ -60,7 +62,6 @@ team_2[2].position = (GRID_COLS - 4, 3)  # Zara
 team_2[3].position = (GRID_COLS - 5, 4)  # Hector
 team_2[4].position = (GRID_COLS - 6, 5)  # Clara
 
-
 # Inicializar Pygame
 pygame.init()
 screen = pygame.display.set_mode((GRID_COLS * CELL_SIZE, GRID_ROWS * CELL_SIZE))
@@ -68,33 +69,30 @@ pygame.display.set_caption("Tactics Game")
 clock = pygame.time.Clock()
 
 # Fonte para os nomes
-font = pygame.font.Font(None, 24)
+font = pygame.font.Font(None, 22)
 
 # Variável para guardar o personagem selecionado
 selected_character = None
 
+
 def draw_character_on_grid(character):
     """Desenha o personagem na posição especificada no grid"""
-    # Tamanho do quadrado (tamanho de cada célula no grid)
-    cell_size = 40
-
-    # Posições x, y baseadas na posição do personagem no grid
-    x = character.position[0] * cell_size
-    y = character.position[1] * cell_size
+    x = character.position[0] * CELL_SIZE
+    y = character.position[1] * CELL_SIZE
 
     # Definir a cor do personagem (usando uma cor baseada no time ou tipo)
     if character in team_1:
-        color = (0, 255, 0)  # Cor verde para o time 1 (pode mudar conforme necessário)
+        color = (255, 140, 0)  # Cor verde para o time 1 (pode mudar conforme necessário)
     else:
-        color = (255, 0, 0)  # Cor vermelha para o time 2 (pode mudar conforme necessário)
+        color = (110, 15, 115)  # Cor vermelha para o time 2 (pode mudar conforme necessário)
 
     # Desenha um quadrado representando o personagem
-    pygame.draw.rect(screen, color, (x, y, cell_size, cell_size))
+    pygame.draw.rect(screen, color, (x, y, CELL_SIZE, CELL_SIZE))
 
     # Opcional: desenhar o nome do personagem dentro do quadrado
-    font = pygame.font.Font(None, 20)
+    font = pygame.font.Font(None, 18)
     text = font.render(character.name, True, (255, 255, 255))  # Texto branco
-    screen.blit(text, (x + 5, y + 5))  # Desenha o nome no quadrado
+    screen.blit(text, (x + 5, y + 7))  # Desenha o nome no quadrado
 
 
 def draw_characters():
@@ -103,6 +101,23 @@ def draw_characters():
         if character.health > 0:  # Só desenha personagens vivos
             draw_character_on_grid(character)
 
+def tela_vitoria(vencedor):
+    #define os parametros do texto de vitoria
+    screen.fill((0,0,0))
+    fonte_vitoria = pygame.font.Font(None, 50)
+    message = (f"Parabéns! Vitória do {vencedor}!")
+    text = fonte_vitoria.render(message, True, (255, 255, 255))
+    text_rect = text.get_rect(center=(GRID_COLS * CELL_SIZE // 2, GRID_ROWS * CELL_SIZE // 2))
+    screen.blit(text, text_rect)
+    pygame.display.flip()
+    pygame.time.wait(3000)
+def testa_vitoria():
+#testa se alguém ja perdeu todos os seus personagens, para dar um valor
+    if all(personagem.health <= 0 for personagem in team_1):
+        return "time 2"
+    elif all(personagem.health <= 0 for personagem in team_2):
+        return "time 1"
+    return None
 
 def main():
     global selected_character, primeira_jogada
@@ -118,6 +133,11 @@ def main():
                 cell = get_cell_at_mouse(pygame.mouse.get_pos(), CELL_SIZE)
 
                 if selected_character:
+                    # Verifica se o personagem selecionado é do turno atual
+                    if selected_character.team != primeira_jogada:
+                        selected_character = None  # Deseleciona o personagem
+                        continue
+
                     # Se o personagem está selecionado, tenta realizar a ação
                     target = get_character_at_cell(cell, team_1 + team_2)
 
@@ -126,34 +146,45 @@ def main():
                         if isinstance(selected_character, Healer) and selected_character.range > 0:
                             heal(selected_character, target)  # Cura se for Healer
                         else:
-                            # Chama a função 'attack', passando 'team_1' e 'team_2'
                             attack(selected_character, target, team_1, team_2)  # Ataque normal
                         selected_character = None  # Deselect após ação
+                        primeira_jogada = "Team 1" if primeira_jogada == "Team 2" else "Team 2"  # Alterna o turno
                     elif not is_cell_occupied(cell, team_1, team_2):
                         # Se a célula não estiver ocupada e dentro do alcance, move o personagem
                         if move_character(selected_character, cell, team_1, team_2):
                             selected_character = None  # Deselect após mover
+                            primeira_jogada = "Team 1" if primeira_jogada == "Team 2" else "Team 2"  # Alterna o turno
                     else:
-                        # Se não for um inimigo, seleciona outro personagem
-                        selected_character = handle_click(pygame.mouse.get_pos(), team_1 + team_2)
+                        selected_character = None  # Deseleciona o personagem se a ação falhar
                 else:
                     # Se não há personagem selecionado, tenta selecionar um novo personagem
-                    selected_character = handle_click(pygame.mouse.get_pos(), team_1 + team_2)
+                    clicked_character = handle_click(pygame.mouse.get_pos(), team_1 + team_2)
+                    if clicked_character and clicked_character.team == primeira_jogada:
+                        selected_character = clicked_character  # Seleciona apenas personagens do turno atual
+        vencedor = testa_vitoria()
+        #testa se alguém ja perdeu todos personagens e mostra o texto
+        if vencedor:
+            tela_vitoria(vencedor)
+            break
 
         # Limpa a tela e desenha os componentes
-        screen.fill((50, 50, 50))
+        screen.fill((50, 5, 20))
         grid.draw(screen)
 
         if selected_character:
             draw_highlighted_area(screen, selected_character, CELL_SIZE, GRID_ROWS, GRID_COLS)
 
         draw_characters()
+
+        # Mostra de quem é o turno atual
+        turn_text = font.render(f"Turno: {primeira_jogada}", True, (0, 255, 0))
+        screen.blit(turn_text, (10, 10))
+
         pygame.display.flip()  # Atualiza a tela
         clock.tick(60)  # Limita a taxa de quadros
 
     pygame.quit()
     sys.exit()
-
 
 
 if __name__ == "__main__":

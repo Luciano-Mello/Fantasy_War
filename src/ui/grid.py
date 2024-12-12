@@ -5,7 +5,7 @@ class Grid:
         self.rows = rows
         self.cols = cols
         self.cell_size = cell_size
-        self.grid_color = (200, 200, 200)
+        self.grid_color = (240, 240, 240)
 
     def draw(self, screen):
         """Desenha a grade no tabuleiro."""
