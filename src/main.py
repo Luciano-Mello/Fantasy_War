@@ -101,6 +101,23 @@ def draw_characters():
         if character.health > 0:  # Só desenha personagens vivos
             draw_character_on_grid(character)
 
+def tela_vitoria(vencedor):
+    #define os parametros do texto de vitoria
+    screen.fill((0,0,0))
+    fonte_vitoria = pygame.font.Font(None, 50)
+    message = (f"Parabéns! Vitória do {vencedor}!")
+    text = fonte_vitoria.render(message, True, (255, 255, 255))
+    text_rect = text.get_rect(center=(GRID_COLS * CELL_SIZE // 2, GRID_ROWS * CELL_SIZE // 2))
+    screen.blit(text, text_rect)
+    pygame.display.flip()
+    pygame.time.wait(3000)
+def testa_vitoria():
+#testa se alguém ja perdeu todos os seus personagens, para dar um valor
+    if all(personagem.health <= 0 for personagem in team_1):
+        return "time 2"
+    elif all(personagem.health <= 0 for personagem in team_2):
+        return "time 1"
+    return None
 
 def main():
     global selected_character, primeira_jogada
@@ -144,6 +161,11 @@ def main():
                     clicked_character = handle_click(pygame.mouse.get_pos(), team_1 + team_2)
                     if clicked_character and clicked_character.team == primeira_jogada:
                         selected_character = clicked_character  # Seleciona apenas personagens do turno atual
+        vencedor = testa_vitoria()
+        #testa se alguém ja perdeu todos personagens e mostra o texto
+        if vencedor:
+            tela_vitoria(vencedor)
+            break
 
         # Limpa a tela e desenha os componentes
         screen.fill((50, 5, 20))
